@@ -1,0 +1,99 @@
+class FlappyGame {
+
+    field Flappy flappy;
+    field Background bg;
+    field int direction;
+
+    constructor FlappyGame new() {
+
+      let flappy = Flappy.new(40, 30);
+      let bg = Background.new(200, 0);
+      let direction = 0;
+
+      return this;
+
+    }
+
+    method void dispose() {
+
+      do flappy.dispose();
+      do Memory.deAlloc(this);
+      return;
+    }
+
+    method void moveFlappy() {
+
+        if (direction = 1) { do flappy.moveUp(); }
+        if (direction = 0) { do flappy.moveDown(); }
+        if (direction = 2) { do flappy.moveRight();}
+        if (direction = 3) { do flappy.moveLeft();}
+
+        do Sys.wait(150);
+      return;
+
+    }
+
+    method void sinkingFlappy(){
+
+      do flappy.moveDeadFlappy();
+      return;
+    }
+
+
+
+
+    method void run() {
+
+      var char key;
+      var boolean start, exit;
+      let exit = false;
+
+
+
+        while (~exit) {
+
+          while (~(flappy.getDead()) & ~exit & ~(flappy.getWin())) {
+
+
+              while (key = 0) {
+
+                  let key = Keyboard.keyPressed();
+                  do moveFlappy();
+
+              }
+              if (key = 81)  { let exit = true; }     //q
+              if (key = 131) { let direction = 1; }   //up
+              if (key = 132) { let direction = 2; }   //right
+              if (key = 130) { let direction = 3; }   //left
+
+              while (~(key = 0) & ~exit) {
+
+                let key = Keyboard.keyPressed();
+                do moveFlappy();
+
+                }
+
+                  let direction = 0;
+              }
+
+              while (~exit  & ~(flappy.getWin())) {
+
+                  let key = Keyboard.keyPressed();
+                  if (key = 81)  { let exit = true; }     //q
+
+                  do flappy.moveDeadFlappy();
+              }
+
+              let key = Keyboard.keyPressed();
+              if (key = 81)  { let exit = true; }     //q
+
+
+
+
+          }
+
+
+      return;
+    }
+
+}

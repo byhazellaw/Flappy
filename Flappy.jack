@@ -1,0 +1,425 @@
+/** Implements a bird*/
+
+class Flappy {
+
+  field int x, y; // screen location of the square's top-left corner
+  field int size; // length of this square, in pixels
+  field int location;
+  field int memAddress;
+  field boolean isDead, isWin;
+
+
+      /**Constructs a new bird with a given location and size*/
+
+      constructor Flappy new(int Ax, int Ay) {
+        let x = Ax;
+        let y = Ay;
+        let location = 1280+44 ;
+        let isDead = false;
+        let isWin = false;
+        do drawFlappy(location);
+
+
+        return this;
+      }
+
+      method void drawFlappyFly(int location) {
+
+          let memAddress = 16384+location;
+
+        	do Memory.poke(memAddress+64, 1984);
+        	do Memory.poke(memAddress+96, 2592);
+        	do Memory.poke(memAddress+128, 4376);
+        	do Memory.poke(memAddress+160, 10502);
+        	do Memory.poke(memAddress+192, 10505);
+        	do Memory.poke(memAddress+224, 8721);
+        	do Memory.poke(memAddress+256, 31762);
+        	do Memory.poke(memAddress+288, 16908);
+        	do Memory.poke(memAddress+320, 15620);
+        	do Memory.poke(memAddress+352, 8708);
+        	do Memory.poke(memAddress+384, 7192);
+        	do Memory.poke(memAddress+416, 992);
+
+        	return;
+        }
+
+      method void drawFlappy(int location) {
+
+
+        	let memAddress = 16384+location;
+
+        	do Memory.poke(memAddress+64, 1984);
+        	do Memory.poke(memAddress+96, 2592);
+        	do Memory.poke(memAddress+128, 4376);
+        	do Memory.poke(memAddress+160, 10500);
+        	do Memory.poke(memAddress+192, 10510);
+        	do Memory.poke(memAddress+224, 8721);
+        	do Memory.poke(memAddress+256, 31761);
+        	do Memory.poke(memAddress+288, 16910);
+        	do Memory.poke(memAddress+320, 15620);
+        	do Memory.poke(memAddress+352, 8708);
+        	do Memory.poke(memAddress+384, 7192);
+        	do Memory.poke(memAddress+416, 992);
+
+        	return;
+      }
+
+      /**Erase flappy**/
+      method void erase() {
+
+      let memAddress = 16384+location;
+
+      do Memory.poke(memAddress+64, 0);
+      do Memory.poke(memAddress+96, 0);
+      do Memory.poke(memAddress+128, 0);
+      do Memory.poke(memAddress+160, 0);
+      do Memory.poke(memAddress+192, 0);
+      do Memory.poke(memAddress+224, 0);
+      do Memory.poke(memAddress+256, 0);
+      do Memory.poke(memAddress+288, 0);
+      do Memory.poke(memAddress+320, 0);
+      do Memory.poke(memAddress+352, 0);
+      do Memory.poke(memAddress+384, 0);
+      do Memory.poke(memAddress+416, 0);
+
+
+        return;
+      }
+
+      /*Dispose this flappy*/
+      method void dispose() {
+
+        do Memory.deAlloc(this);
+        return;
+
+      }
+
+
+
+
+
+
+      method void drawFlappyDrown(int location) {
+
+          let memAddress = 16384+location;
+
+        	do Memory.poke(memAddress+64, 1984);
+        	do Memory.poke(memAddress+96, 2592);
+        	do Memory.poke(memAddress+128, 4376);
+        	do Memory.poke(memAddress+160, 10500);
+        	do Memory.poke(memAddress+192, 10508);
+        	do Memory.poke(memAddress+224, 8722);
+        	do Memory.poke(memAddress+256, 31761);
+        	do Memory.poke(memAddress+288, 16905);
+        	do Memory.poke(memAddress+320, 15622);
+        	do Memory.poke(memAddress+352, 8708);
+        	do Memory.poke(memAddress+384, 7192);
+        	do Memory.poke(memAddress+416, 992);
+
+        	return;
+        }
+
+
+        /** Moves flappy up**/
+        method void moveUp() {
+
+            if ( ~getWin()) {
+
+                do erase();
+                let location = location - 128;
+                if (~collidedUp(location)) {
+
+                      do drawFlappyFly(location);
+
+                } else {
+
+                        do gameOver();
+                        let location = location + 128;
+                        do drawFlappyDead(location);
+
+                }
+            }
+
+
+
+
+            return;
+
+        }
+
+        method void moveRight() {
+
+            if ( ~getWin()) {
+              do erase();
+              let location = location + 1;
+              if (~collided(location)) {
+
+                    do drawFlappyFly(location);
+              } else {
+                  do gameOver();
+                  let location = location - 1;
+                  do drawFlappyDead(location);
+
+                  }
+              }
+
+          return;
+        }
+
+      method void moveLeft() {
+
+          if ( ~getWin()) {
+              do erase();
+              let location = location - 1;
+              if (~collidedLeft(location)) {
+
+                do drawFlappyFly(location);
+
+              } else {
+
+                do gameOver();
+                let location = location + 1;
+                do drawFlappyDead(location);
+
+
+                }
+              }
+        return;
+      }
+
+      method void moveDeadFlappy(){
+
+        if (getDead()) {
+
+
+        // & ~(location=4430)
+        if (location < 6666 & ~(location=6202)& ~(location =4430)) {
+
+              let location = location - 64;
+              do erase();
+
+              let location = location + 128;
+              do drawFlappyDead(location);
+              do gameOver();
+
+
+
+        }
+        }
+
+
+          do Sys.wait(100);
+          return;
+      }
+
+
+
+      /** Moves flappy down **/
+      method void moveDown() {
+
+          do erase();
+          //was 160
+          let location = location + 128;
+
+          if (~collidedDown(location)) {
+
+              do drawFlappyDrown(location);
+
+          } else {
+
+            if (checkWin(location)) {
+
+              do youWin();
+              let location = location - 128;
+              do drawFlappy(location);
+
+
+            } else {
+
+                do gameOver();
+                let location = location - 128;
+                do drawFlappyDead(location);
+
+            }
+
+          }
+        return;
+      }
+
+
+      method boolean getWin(){
+        return isWin;
+      }
+
+      method void youWin() {
+
+          do Output.moveCursor(11, 36);
+          do Output.printString("You win!");
+          return;
+
+      }
+
+      method void gameOver() {
+
+          do Output.moveCursor(11, 36);
+          do Output.printString("Game Over");
+
+          return;
+      }
+
+      method boolean getDead(){
+
+        return isDead;
+      }
+
+      method void drawFlappyDead(int location) {
+
+        	let memAddress = 16384+location;
+        	do Memory.poke(memAddress+0, 960);
+        	do Memory.poke(memAddress+32, 7200);
+        	do Memory.poke(memAddress+64, 8728);
+        	do Memory.poke(memAddress+96, 15620);
+        	do Memory.poke(memAddress+128, 16910);
+        	do Memory.poke(memAddress+160, 31761);
+        	do Memory.poke(memAddress+192, 8721);
+        	do Memory.poke(memAddress+224, 11534);
+        	do Memory.poke(memAddress+256, 8452);
+        	do Memory.poke(memAddress+288, 4376);
+        	do Memory.poke(memAddress+320, 2592);
+        	do Memory.poke(memAddress+352, 1984);
+
+        	return;
+          }
+
+
+      //check if any of the poke are already occupied
+      method boolean collided(int location){
+
+          var int i, j;
+          var boolean result;
+          let i = 0;
+          let j = 0;
+          let location = location - 64;
+          let memAddress = 16384+location;
+
+          while ( i < 16) {
+
+              let j =  Memory.peek(memAddress);
+
+              if (j > 0) {
+
+                  let isDead = true;
+                  return true;
+              }
+
+              let memAddress = memAddress + 32;
+              let i = i + 1;
+          }
+          return false;
+      }
+
+      //TODO - fix left game boundary
+      method boolean collidedLeft(int location){
+
+          var int i, j;
+          var boolean result;
+          let i = 0;
+          let j = 0;
+          let location = location - 32;
+
+          let memAddress = 16384+location;
+
+          while ( i < 16) {
+
+              let j =  Memory.peek(memAddress);
+
+              if (j > 0) {
+
+                  let isDead = true;
+                  return true;
+              }
+
+              let memAddress = memAddress + 32;
+              let i = i + 1;
+          }
+          return false;
+      }
+
+      method boolean collidedUp(int location){
+
+          var int i, j;
+          var boolean result;
+          let i = 0;
+          let j = 0;
+          let location = location - 128;
+          let memAddress = 16384+location;
+
+          while ( i < 16) {
+
+              let j =  Memory.peek(memAddress);
+
+              if (j > 0) {
+
+                  let isDead = true;
+                  return true;
+              }
+
+              let memAddress = memAddress + 32;
+              let i = i + 1;
+          }
+          return false;
+      }
+
+
+
+
+      method boolean collidedDown(int location){
+
+          var int i, j;
+          var boolean result;
+          let i = 0;
+          let j = 0;
+          let location = location + 64;
+          let memAddress = 16384+location;
+
+          while ( i < 16) {
+
+              let j =  Memory.peek(memAddress);
+
+              if (j > 0) {
+
+                  let isDead = true;
+                  return true;
+              }
+
+              let memAddress = memAddress + 32;
+              let i = i + 1;
+          }
+          return false;
+      }
+
+      method boolean checkWin(int location) {
+
+        if (location = 6202) {
+
+          let isWin = true;
+
+          return true;
+        }
+        return false;
+      }
+
+      method void drawNest(int location) {
+
+            let memAddress = 16384+location;
+
+            do Memory.poke(memAddress+384, -14941);
+            do Memory.poke(memAddress+416, -21931);
+            do Memory.poke(memAddress+448, 20874);
+            do Memory.poke(memAddress+480, 16380);
+
+
+            return;
+        }
+
+}

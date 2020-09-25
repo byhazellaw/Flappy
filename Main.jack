@@ -1,0 +1,19 @@
+class Main {
+
+  function void main() {
+      var FlappyGame game;
+      var char key;
+
+      let game = FlappyGame.new();
+      let key = Keyboard.readChar();
+
+      if (key = 128) {
+          do game.run();
+      }
+
+      do game.dispose();
+
+      return;
+  }
+
+}
